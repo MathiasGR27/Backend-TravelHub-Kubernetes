@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  namespace: travelhub
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: admin-service
+
+  template:
+    metadata:
+      labels:
+        app: admin-service
+
+    spec:
+      containers:
+        - name: admin-service
+
+          image: travelhub-admin:1.0
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 4005
+
+          envFrom:
+            - configMapRef:
+                name: admin-config
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4005
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4005
+            initialDelaySeconds: 20
+            periodSeconds: 10

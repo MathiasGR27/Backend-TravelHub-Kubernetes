@@ -20,7 +20,7 @@ spec:
       containers:
         - name: pagos-service
 
-          image: travelhub-pagos:1.0
+          image: travelhub-pagos:1.1
           imagePullPolicy: Never
 
           ports:

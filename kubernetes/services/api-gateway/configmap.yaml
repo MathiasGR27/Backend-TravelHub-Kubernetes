@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: travelhub
+
+data:
+  PORT: "4000"
+  HOST: "0.0.0.0"
+
+  AUTH_SERVICE_URL: "http://auth-service:4001"
+  VUELOS_SERVICE_URL: "http://vuelos-service:4002"
+  RESERVAS_SERVICE_URL: "http://reservas-service:4003"
+  PAGOS_SERVICE_URL: "http://pagos-service:4004"
+  ADMIN_SERVICE_URL: "http://admin-service:4005"

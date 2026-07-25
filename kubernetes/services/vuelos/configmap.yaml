@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vuelos-config
+  namespace: travelhub
+
+data:
+  PORT: "4002"
+  HOST: "0.0.0.0"
+
+  DB_HOST: "postgres-vuelos"
+  DB_PORT: "5432"
+  DB_NAME: "travelhub_vuelos"

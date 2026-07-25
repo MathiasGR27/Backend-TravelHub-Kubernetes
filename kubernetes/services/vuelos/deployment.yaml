@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vuelos-service
+  namespace: travelhub
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: vuelos-service
+
+  template:
+    metadata:
+      labels:
+        app: vuelos-service
+
+    spec:
+      containers:
+        - name: vuelos-service
+
+          image: travelhub-vuelos:1.0
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 4002
+
+          envFrom:
+            - configMapRef:
+                name: vuelos-config
+
+            - secretRef:
+                name: vuelos-secret
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4002
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4002
+            initialDelaySeconds: 20
+            periodSeconds: 10

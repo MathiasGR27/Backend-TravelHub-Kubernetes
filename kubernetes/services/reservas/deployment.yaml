@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservas-service
+  namespace: travelhub
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: reservas-service
+
+  template:
+    metadata:
+      labels:
+        app: reservas-service
+
+    spec:
+      containers:
+        - name: reservas-service
+
+          image: travelhub-reservas:1.0
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 4003
+
+          envFrom:
+            - configMapRef:
+                name: reservas-config
+
+            - secretRef:
+                name: reservas-secret
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4003
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4003
+            initialDelaySeconds: 20
+            periodSeconds: 10

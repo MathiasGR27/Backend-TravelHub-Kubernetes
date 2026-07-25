@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-reservas
+  namespace: travelhub
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: postgres-reservas
+
+  template:
+    metadata:
+      labels:
+        app: postgres-reservas
+
+    spec:
+      containers:
+        - name: postgres-reservas
+
+          image: postgres:17-alpine
+
+          ports:
+            - containerPort: 5432
+
+          envFrom:
+            - secretRef:
+                name: postgres-reservas-secret
+
+          volumeMounts:
+            - name: postgres-reservas-data
+              mountPath: /var/lib/postgresql/data
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+      volumes:
+        - name: postgres-reservas-data
+          persistentVolumeClaim:
+            claimName: postgres-reservas-pvc

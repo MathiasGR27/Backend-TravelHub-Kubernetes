@@ -13,3 +13,8 @@ data:
   RESERVAS_SERVICE_URL: "http://reservas-service:4003"
   PAGOS_SERVICE_URL: "http://pagos-service:4004"
   ADMIN_SERVICE_URL: "http://admin-service:4005"
+
+  OTEL_SERVICE_NAME: "api-gateway"
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4318/v1/traces"
+  OTEL_TRACES_EXPORTER: "otlp"
+  OTEL_PROPAGATORS: "tracecontext,baggage"

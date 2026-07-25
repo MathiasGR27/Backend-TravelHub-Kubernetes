@@ -20,7 +20,7 @@ spec:
       containers:
         - name: reservas-service
 
-          image: travelhub-reservas:1.0
+          image: travelhub-reservas:1.1
           imagePullPolicy: Never
 
           ports:

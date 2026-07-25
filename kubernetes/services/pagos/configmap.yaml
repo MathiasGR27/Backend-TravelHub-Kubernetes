@@ -16,6 +16,6 @@ data:
   RESERVAS_SERVICE_URL: "http://reservas-service:4003"
 
   OTEL_SERVICE_NAME: "pagos-service"
-  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://jaeger:4318/v1/traces"
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4318/v1/traces"
   OTEL_TRACES_EXPORTER: "otlp"
   OTEL_PROPAGATORS: "tracecontext,baggage"

@@ -15,4 +15,13 @@ app.get("/", (req, res) => {
   res.json({ service: "ADMIN SERVICE", status: "OK" });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    service: "admin-service",
+    status: "UP",
+    timestamp: new Date().toISOString()
+  });
+});
+
+
 module.exports = app;

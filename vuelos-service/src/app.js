@@ -17,4 +17,13 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    service: "vuelos-service",
+    status: "UP",
+    timestamp: new Date().toISOString()
+  });
+});
+
+
 module.exports = app;

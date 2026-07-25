@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-auth
+  namespace: travelhub
+
+spec:
+  selector:
+    app: postgres-auth
+
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+
+  type: ClusterIP

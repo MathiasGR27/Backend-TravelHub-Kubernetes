@@ -3,7 +3,8 @@ require("dotenv").config();
 const app = require("./app");
 
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.HOST || "0.0.0.0";
 
-app.listen(PORT, () => {
-  console.log(`API Gateway ejecutandose en puerto ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`API Gateway ejecutándose en http://${HOST}:${PORT}`);
 });

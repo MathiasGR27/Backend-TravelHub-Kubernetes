@@ -1,132 +1,375 @@
-# TravelHub API - Sistema de Gestión de Reservas de Vuelos
+# TravelHub Backend
 
-TravelHub es una API REST profesional construida con **Node.js**, **Express** y **Sequelize**. El sistema permite gestionar el ciclo completo de una agencia de viajes: desde la oferta de vuelos y el registro de pasajeros, hasta un complejo sistema de fidelización por puntos y pagos.
-
----
-
-## Funcionalidades Principales
-
-* **Gestión de Usuarios:** Registro y autenticación mediante JWT (JSON Web Tokens).
-* **Control de Roles:** Diferenciación de permisos entre usuarios estándar (`USER`) y administradores (`ADMIN`).
-* **Reserva de Vuelos:** Creación de reservas con múltiples pasajeros por transacción.
-* **Sistema de Fidelización:**
-
-  * Acumulación de puntos por cada compra (1 unidad monetaria = 1 punto).
-  * Redención de puntos para obtener descuentos progresivos (hasta el 30%).
-* **Búsqueda Avanzada:** Filtros dinámicos por origen, destino, rango de precios y fechas.
+Backend del sistema **TravelHub**, desarrollado bajo una arquitectura de **microservicios**, permitiendo administrar la autenticación de usuarios, vuelos, reservas, pagos y administración mediante servicios independientes desplegados sobre Kubernetes.
 
 ---
 
-## Stack Tecnológico
+# Arquitectura
 
-* **Entorno:** Node.js
-* **Framework:** Express.js
-* **Base de Datos:** PostgreSQL
-* **ORM:** Sequelize
-* **Seguridad:** Bcrypt.js (Hasheo de contraseñas) y JWT (Tokens de acceso)
+La plataforma está basada en una arquitectura de microservicios donde cada servicio posee su propia lógica de negocio y una base de datos PostgreSQL independiente.
 
----
+```
+                    React Native / Expo
+                             │
+                             ▼
+                       API Gateway
+                             │
+        ┌────────────┬────────────┬────────────┬────────────┬────────────┐
+        ▼            ▼            ▼            ▼            ▼
+     Auth        Vuelos      Reservas       Pagos        Admin
+        │            │            │            │
+        ▼            ▼            ▼            ▼
+ PostgreSQL   PostgreSQL   PostgreSQL   PostgreSQL
 
-## Estructura del Proyecto
-
-```text
-src/
-├── controllers/    # Lógica de negocio (auth, pagos, reservas, vuelos)
-├── middlewares/    # Validaciones de JWT y roles de usuario
-├── models/         # Definición de tablas y relaciones de base de datos
-├── routes/         # Definición de rutas y endpoints
-├── app.js          # Configuración principal de Express
-└── server.js       # Inicialización del servidor HTTP
+                     OpenTelemetry SDK
+                             │
+                             ▼
+                OpenTelemetry Collector
+                             │
+                             ▼
+                          Jaeger
 ```
 
 ---
 
-## ⚙️ Instalación y Uso
+# Microservicios
 
-1. **Requisitos previos**
+El backend está compuesto por los siguientes servicios:
 
-   * Node.js v14+ instalado.
-   * Instancia de PostgreSQL activa.
+- API Gateway
+- Auth Service
+- Vuelos Service
+- Reservas Service
+- Pagos Service
+- Admin Service
+- PostgreSQL (Base de datos por servicio)
+- OpenTelemetry Collector
+- Jaeger
 
-2. **Configuración del entorno**
+---
 
-Crea un archivo `.env` en la raíz del proyecto con los siguientes datos:
+# Tecnologías utilizadas
+
+- Node.js
+- Express.js
+- Sequelize
+- PostgreSQL
+- Docker
+- Kubernetes
+- Minikube
+- OpenTelemetry
+- OpenTelemetry Collector
+- Jaeger
+- JWT
+- Bcrypt
+- Axios
+
+---
+
+# Estructura del proyecto
+
+```
+Backend-TravelHub-Kubernetes
+│
+├── api-gateway/
+├── auth-service/
+├── vuelos-service/
+├── reservas-service/
+├── pagos-service/
+├── admin-service/
+│
+├── kubernetes/
+│   ├── namespace.yaml
+│   ├── databases/
+│   ├── services/
+│   └── observability/
+│
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+# Requisitos
+
+Antes de ejecutar el proyecto se requiere:
+
+- Docker Desktop
+- Kubernetes
+- Minikube
+- kubectl
+- Node.js
+- npm
+
+---
+
+# Clonar el proyecto
+
+```bash
+git clone https://github.com/MathiasGR27/Backend-TravelHub-Kubernetes
+```
+
+Ingresar al proyecto
+
+```bash
+cd Backend-TravelHub-Kubernetes
+```
+
+---
+
+# Construcción de imágenes Docker
+
+## API Gateway
+
+```bash
+docker build -t travelhub-api-gateway:1.1 ./api-gateway
+```
+
+## Auth Service
+
+```bash
+docker build -t travelhub-auth:1.1 ./auth-service
+```
+
+## Vuelos Service
+
+```bash
+docker build -t travelhub-vuelos:1.1 ./vuelos-service
+```
+
+## Reservas Service
+
+```bash
+docker build -t travelhub-reservas:1.1 ./reservas-service
+```
+
+## Pagos Service
+
+```bash
+docker build -t travelhub-pagos:1.1 ./pagos-service
+```
+
+## Admin Service
+
+```bash
+docker build -t travelhub-admin:1.1 ./admin-service
+```
+
+---
+
+# Cargar imágenes en Minikube
+
+```bash
+minikube image load travelhub-api-gateway:1.1
+minikube image load travelhub-auth:1.1
+minikube image load travelhub-vuelos:1.1
+minikube image load travelhub-reservas:1.1
+minikube image load travelhub-pagos:1.1
+minikube image load travelhub-admin:1.1
+```
+
+---
+
+# Iniciar Kubernetes
+
+Iniciar Minikube
+
+```bash
+minikube start
+```
+
+Verificar el estado
+
+```bash
+minikube status
+```
+
+---
+
+Crear el namespace
+
+```bash
+kubectl apply -f kubernetes/namespace.yaml
+```
+
+Seleccionar el namespace
+
+```bash
+kubectl config set-context --current --namespace=travelhub
+```
+
+---
+
+# Desplegar PostgreSQL
+
+```bash
+kubectl apply -f kubernetes/databases/
+```
+
+Verificar
+
+```bash
+kubectl get pods
+```
+
+---
+
+# Desplegar microservicios
+
+```bash
+kubectl apply -f kubernetes/services/api-gateway/
+
+kubectl apply -f kubernetes/services/auth/
+
+kubectl apply -f kubernetes/services/vuelos/
+
+kubectl apply -f kubernetes/services/reservas/
+
+kubectl apply -f kubernetes/services/pagos/
+
+kubectl apply -f kubernetes/services/admin/
+```
+
+---
+
+# Desplegar OpenTelemetry
+
+```bash
+kubectl apply -f kubernetes/observability/
+```
+
+---
+
+# Verificar el despliegue
+
+Pods
+
+```bash
+kubectl get pods
+```
+
+Deployments
+
+```bash
+kubectl get deployments
+```
+
+Services
+
+```bash
+kubectl get services
+```
+
+PVC
+
+```bash
+kubectl get pvc
+```
+
+---
+
+# Exponer servicios
+
+## API Gateway
+
+```bash
+kubectl port-forward service/api-gateway 4000:4000 --address=0.0.0.0 -n travelhub
+```
+
+---
+
+## Auth Service
+
+```bash
+kubectl port-forward service/auth-service 4001:4001 --address=0.0.0.0 -n travelhub
+```
+
+---
+
+## Jaeger
+
+```bash
+kubectl port-forward service/jaeger 16686:16686 -n travelhub
+```
+
+---
+
+# Observabilidad
+
+La plataforma utiliza OpenTelemetry para instrumentar automáticamente todos los microservicios.
+
+El flujo de observabilidad es:
+
+```
+API Gateway
+      │
+      ▼
+Microservicios
+      │
+      ▼
+OpenTelemetry SDK
+      │
+      ▼
+OpenTelemetry Collector
+      │
+      ▼
+Jaeger
+```
+
+---
+
+# Variables de entorno
+
+Cada microservicio utiliza variables de entorno administradas mediante ConfigMaps y Secrets.
+
+Ejemplo:
 
 ```env
-PORT=8080
-DB_NAME=tu_base_de_datos
-DB_USER=tu_usuario
-DB_PASSWORD=tu_password
-DB_HOST=localhost
+PORT=4001
+
+DB_HOST=postgres-auth
+
 DB_PORT=5432
-JWT_SECRET=tu_clave_secreta_para_tokens
-```
 
-3. **Instalación de dependencias**
+DB_NAME=travelhub_auth
 
-```bash
-npm install
-```
+DB_USER=postgres
 
-4. **Ejecución**
+DB_PASSWORD=*****
 
-Para iniciar el proyecto (esto creará las tablas automáticamente):
-
-```bash
-npm start
-```
-
-Para desarrollo con recarga automática:
-
-```bash
-npm run dev
+JWT_SECRET=********
 ```
 
 ---
 
-##  API Endpoints
+# Verificación
 
-###  Autenticación
+Una vez desplegado el sistema se recomienda verificar:
 
-| Método | Ruta               | Descripción                   |
-| ------ | ------------------ | ----------------------------- |
-| POST   | /api/auth/register | Registro de usuarios.         |
-| POST   | /api/auth/login    | Login y retorno de Token JWT. |
-
-###  Vuelos
-
-| Método | Ruta               | Acceso  | Descripción                          |
-| ------ | ------------------ | ------- | ------------------------------------ |
-| GET    | /api/vuelos        | Público | Lista todos los vuelos disponibles.  |
-| GET    | /api/vuelos/buscar | Público | Búsqueda con filtros (query params). |
-| POST   | /api/vuelos        | Admin   | Crear nueva oferta de vuelo.         |
-| PUT    | /api/vuelos/:id    | Admin   | Modificar vuelo.                     |
-| DELETE | /api/vuelos/:id    | Admin   | Eliminar vuelo.                      |
-
-###  Reservas y Pasajeros
-
-| Método | Ruta                       | Acceso  | Descripción                         |
-| ------ | -------------------------- | ------- | ----------------------------------- |
-| POST   | /api/reservas              | Usuario | Crea reserva y asigna pasajeros.    |
-| GET    | /api/reservas/mis-reservas | Usuario | Ver historial personal.             |
-| GET    | /api/reservas              | Admin   | Ver todas las reservas del sistema. |
-
-###  Pagos y Puntos
-
-| Método | Ruta                     | Acceso  | Descripción                               |
-| ------ | ------------------------ | ------- | ----------------------------------------- |
-| POST   | /api/pagos/confirmar     | Usuario | Pagar reserva aplicando puntos/descuento. |
-| GET    | /api/usuarios/mis-puntos | Usuario | Consultar balance de puntos actual.       |
-
-###  Sistema de Descuentos por Puntos
-
-El sistema aplica descuentos automáticos basados en la cantidad de puntos que el usuario decida redimir:
-
-* 450 pts: 5% de descuento
-* 900 pts: 10% de descuento
-* 1500 pts: 15% de descuento
-* 2000 pts: 20% de descuento
-* 2500 pts: 25% de descuento
-* 3000 pts: 30% de descuento
+- Registro de usuarios.
+- Inicio de sesión.
+- Consulta de vuelos.
+- Creación de reservas.
+- Procesamiento de pagos.
+- Funciones administrativas.
+- Visualización de trazas en Jaeger.
 
 ---
+
+# Monitoreo
+
+Acceder a Jaeger
+
+```
+http://localhost:16686
+```
+
+Desde la interfaz es posible visualizar las trazas correspondientes a:
+
+- API Gateway
+- Auth Service
+- Vuelos Service
+- Reservas Service
+- Pagos Service
+- Admin Service
+

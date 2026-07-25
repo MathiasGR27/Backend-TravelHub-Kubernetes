@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pagos-config
+  namespace: travelhub
+
+data:
+  PORT: "4004"
+  HOST: "0.0.0.0"
+
+  DB_HOST: "postgres-pagos"
+  DB_PORT: "5432"
+  DB_NAME: "travelhub_pagos"
+
+  AUTH_SERVICE_URL: "http://auth-service:4001"
+  RESERVAS_SERVICE_URL: "http://reservas-service:4003"

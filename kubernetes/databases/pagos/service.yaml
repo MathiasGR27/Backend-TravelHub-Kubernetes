@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-pagos
+  namespace: travelhub
+
+spec:
+  selector:
+    app: postgres-pagos
+
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+
+  type: ClusterIP

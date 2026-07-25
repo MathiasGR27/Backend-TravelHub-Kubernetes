@@ -20,7 +20,7 @@ spec:
       containers:
         - name: vuelos-service
 
-          image: travelhub-vuelos:1.0
+          image: travelhub-vuelos:1.1
           imagePullPolicy: Never
 
           ports:

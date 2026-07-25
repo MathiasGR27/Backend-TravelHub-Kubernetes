@@ -20,7 +20,7 @@ spec:
       containers:
         - name: admin-service
 
-          image: travelhub-admin:1.0
+          image: travelhub-admin:1.1
           imagePullPolicy: Never
 
           ports:
